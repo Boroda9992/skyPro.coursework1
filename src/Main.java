@@ -46,9 +46,6 @@ public class Main {
         System.out.println("----Сотрудник с минимальным окладом----");
         System.out.println(findEmployeeWithMinSalary());
 
-        System.out.println("----Вычислить среднюю зарплату по отделу----");
-        System.out.println(calculateAverageSalaryFromDepartment(findEmployeeWithMaxSalary().getDepartment()));
-
         System.out.println("----Добавить сотрудника----");
         addEmployee(generateEmployee());
 
@@ -77,26 +74,38 @@ public class Main {
         printEmployeesNamesByDepartment(2);
 
         System.out.println("----Сотрудники с окладом меньше чем заданное число----");
-        showEmployeesWithSalaryLowerThan(99000);
+        findEmployeesWithSalaryLowerThan(99000);
 
         System.out.println("----Сотрудники с окладом больше или равно заданному числу----");
-        showEmployeesWithSalaryHigherThan(66000);
+        findEmployeesWithSalaryHigherThan(66000);
+
+        System.out.println("----Сотрудники по выбранному отделу с окладом больше заданного числа----");
+        findEmployeesWithSalaryHigherThanByDepartment(66000, 2);
+
+        System.out.println("----Сотрудники по выбранному отделу с окладом меньше заданного числа----");
+        findEmployeesWithSalaryLowerThanByDepartment(150000, 2);
 
     }
 
     /**
-     * Метод печатает конкатенацию всех полей из всех объектов Employee
+     * Метод печатает данные всех сотрудников.
      */
     public static void printEmployees() {
         for (Employee employee : EMPLOYEES) {
-            System.out.println(employee);
+            if (employee != null) {
+                System.out.println(employee);
+            }
         }
     }
 
+    /**
+     * Метод печатает данные всех сотрудников из выбранного отдела.
+     *
+     * @param department - (int) целое число от 1 до 5.
+     */
     public static void printEmployeesByDepartment(int department) {
-        System.out.println("///////// Отдел: " + department);
         for (Employee employee : EMPLOYEES) {
-            if (department == employee.getDepartment()) {
+            if (employee != null && department == employee.getDepartment()) {
                 System.out.println("ID: " + employee.getId());
                 System.out.println("ФИО: " + employee.getFullName());
                 System.out.println("Оклад: " + employee.getSalary());
@@ -105,40 +114,38 @@ public class Main {
     }
 
     /**
-     * Метод печатает параметр fullName из всех объектов Employee
+     * Метод печатает ФИО всех сотрудников.
      */
     public static void printEmployeesNames() {
         for (Employee employee : EMPLOYEES) {
-            System.out.println(employee.getFullName());
-        }
-    }
-
-    public static void printEmployeesNamesByDepartment(int department) {
-        System.out.println("///////// Отдел: " + department);
-        for (Employee employee : EMPLOYEES) {
-            if (department == employee.getDepartment()) {
+            if (employee != null) {
                 System.out.println(employee.getFullName());
             }
         }
     }
 
     /**
-     * Метод считает сумму параметров salary для всех сотрудников.
+     * Метод печатает ФИО всех сотрудников из выбранного отдела.
      *
-     * @return int
+     * @param department - (int) целое число от 1 до 5.
+     */
+    public static void printEmployeesNamesByDepartment(int department) {
+        for (Employee employee : EMPLOYEES) {
+            if (employee != null && department == employee.getDepartment()) {
+                System.out.println(employee.getFullName());
+            }
+        }
+    }
+
+    /**
+     * Метод считает сумму окладов для всех сотрудников.
+     *
+     * @return - (int) sum - сумма окладов в виде целого числа.
      */
     private static int calculateSumOfSalaries() {
         int sum = 0;
         for (Employee employee : EMPLOYEES) {
-            sum += employee.getSalary();
-        }
-        return sum;
-    }
-
-    private static int calculateSumOfSalariesByDepartment(int department) {
-        int sum = 0;
-        for (Employee employee : EMPLOYEES) {
-            if (department == employee.getDepartment()) {
+            if (employee != null) {
                 sum += employee.getSalary();
             }
         }
@@ -146,103 +153,52 @@ public class Main {
     }
 
     /**
-     * Метод вычисляет среднее значение всех параметров salary для всех сотрудников.
+     * Метод считает сумму окладов для всех сотрудников из выбранного отдела.
      *
-     * @return double
+     * @param department - (int) целое число от 1 до 5.
+     * @return - (int) sum - сумма окладов в виде целого числа.
+     */
+    private static int calculateSumOfSalariesByDepartment(int department) {
+        int sum = 0;
+        for (Employee employee : EMPLOYEES) {
+            if (employee != null && department == employee.getDepartment()) {
+                sum += employee.getSalary();
+            }
+        }
+        return sum;
+    }
+
+    /**
+     * Метод считает средний оклад для всех сотрудников.
+     *
+     * @return - (double) sum/count если число сотрудников count не равно нулю. В противном случае, если в базе нет сотрудников, возвращает ноль.
      */
     private static double calculateAverageSalary() {
         int count = 0;
+        double sum = 0;
         for (Employee employee : EMPLOYEES) {
             if (employee != null) {
                 count++;
+                sum += employee.getSalary();
             }
         }
-        return (double) calculateSumOfSalaries() / count;
+        if (count != 0) {
+            return sum / count;
+        } else {
+            return 0;
+        }
+
     }
 
     /**
-     * Метод считает средний оклад по отделу
+     * Метод считает средний оклад для всех сотрудников из выбранного отдела.
      *
-     * @param department - целое число типа int, отражающее номер отдела.
-     * @return (double) средний оклад по отделу.
+     * @param department - (int) целое число от 1 до 5.
+     * @return - (double) sum/count если число сотрудников count не равно нулю. В противном случае, если в базе нет сотрудников, возвращает ноль.
      */
     private static double calculateAverageSalaryByDepartment(int department) {
         int count = 0;
-        double averageByDepartment;
-        for (Employee employee : EMPLOYEES) {
-            if (employee != null && department == employee.getDepartment()) {
-                count++;
-            }
-        }
-        return (double) calculateSumOfSalariesByDepartment(department) / count;
-    }
-
-    /**
-     * Метод находит сотрудника с максимальным окладом и возвращает объект этого сотрудника.
-     * Возвращает null, если ничего не нашел (пустой массив, другой отдел и т.д.)
-     *
-     * @return Employee
-     */
-    private static Employee findEmployeeWithMaxSalary() {
-        Employee employeeWithMaxSalary = null;
-        double maxSalary = Integer.MIN_VALUE;
-        for (Employee employee : EMPLOYEES) {
-            if (maxSalary < employee.getSalary()) {
-                maxSalary = employee.getSalary();
-                employeeWithMaxSalary = employee;
-            }
-        }
-        return employeeWithMaxSalary;
-    }
-
-    private static Employee findEmployeeWithMaxSalaryByDepartment(int department) {
-        Employee employeeWithMaxSalary = null;
-        System.out.println("///////// Отдел: " + department);
-        double maxSalary = Integer.MIN_VALUE;
-        for (Employee employee : EMPLOYEES) {
-            if (maxSalary < employee.getSalary() && department == employee.getDepartment()) {
-                maxSalary = employee.getSalary();
-                employeeWithMaxSalary = employee;
-            }
-        }
-        return employeeWithMaxSalary;
-    }
-
-    /**
-     * Метод находит сотрудника с максимальным окладом и возвращает объект этого сотрудника.
-     * Возвращает null, если ничего не нашел (пустой массив, другой отдел и т.д.)
-     *
-     * @return Employee
-     */
-    private static Employee findEmployeeWithMinSalary() {
-        Employee employeeWithMinSalary = null;
-        double minSalary = Integer.MAX_VALUE;
-        for (Employee employee : EMPLOYEES) {
-            if (minSalary > employee.getSalary()) {
-                minSalary = employee.getSalary();
-                employeeWithMinSalary = employee;
-            }
-        }
-        return employeeWithMinSalary;
-    }
-
-    private static Employee findEmployeeWithMinSalaryByDepartment(int department) {
-        Employee employeeWithMinSalary = null;
-        System.out.println("///////// Отдел: " + department);
-        double minSalary = Integer.MAX_VALUE;
-        for (Employee employee : EMPLOYEES) {
-            if (minSalary > employee.getSalary() && department == employee.getDepartment()) {
-                minSalary = employee.getSalary();
-                employeeWithMinSalary = employee;
-            }
-        }
-        return employeeWithMinSalary;
-    }
-
-
-    private static double calculateAverageSalaryFromDepartment(int department) {
-        int count = 0;
-        int sum = 0;
+        double sum = 0;
         for (Employee employee : EMPLOYEES) {
             if (employee != null && department == employee.getDepartment()) {
                 count++;
@@ -250,50 +206,104 @@ public class Main {
             }
         }
         if (count != 0) {
-            return (double) sum / count;
-        }
-        return 0;
-    }
-
-    private static void addEmployee(Employee newEmployee) {
-        boolean added = false;
-        for (int i = 0; i < EMPLOYEES.length; i++) {
-            if (EMPLOYEES[i] == null) {
-                EMPLOYEES[i] = newEmployee;
-                added = true;
-                break;
-            }
-            if (!added) {
-                System.out.println("Сотрудник не добавлен! Возможно, массив полон.");
-            }
+            return sum / count;
+        } else {
+            return 0;
         }
     }
 
     /**
-     * Метод принимает целое число, в качестве процента, на который будет увеличен оклад всех сотрудников.
-     * Для удобства, метод сам переводит int в double, позволяя просто писать целое число в параметр.
+     * Метод находит сотрудника с максимальным окладом.
      *
-     * @param bonus - целое число типа int, отражающее процент, на который будут повышены оклады всех сотрудников.
+     * @return - (Employee) возвращает объект сотрудника с максимальным окладом, или null, если сотрудников в базе нет.
+     */
+    private static Employee findEmployeeWithMaxSalary() {
+        Employee employeeWithMaxSalary = null;
+        double maxSalary = Integer.MIN_VALUE;
+        for (Employee employee : EMPLOYEES) {
+            if (employee != null && maxSalary < employee.getSalary()) {
+                maxSalary = employee.getSalary();
+                employeeWithMaxSalary = employee;
+            }
+        }
+        return employeeWithMaxSalary;
+    }
+
+    /**
+     * Метод находит сотрудника с максимальным окладом из выбранного отдела.
+     *
+     * @param department - (int) целое число от 1 до 5.
+     * @return - (Employee) возвращает объект сотрудника с максимальным окладом из выбранного отдела. Вернет null, если отдел пуст.
+     */
+    private static Employee findEmployeeWithMaxSalaryByDepartment(int department) {
+        Employee employeeWithMaxSalary = null;
+        double maxSalary = Integer.MIN_VALUE;
+        for (Employee employee : EMPLOYEES) {
+            if (employee != null && maxSalary < employee.getSalary() && department == employee.getDepartment()) {
+                maxSalary = employee.getSalary();
+                employeeWithMaxSalary = employee;
+            }
+        }
+        return employeeWithMaxSalary;
+    }
+
+    /**
+     * Метод находит сотрудника с минимальным окладом.
+     *
+     * @return - (Employee) возвращает объект сотрудника с минимальным окладом, или null, если сотрудников в базе нет.
+     */
+    private static Employee findEmployeeWithMinSalary() {
+        Employee employeeWithMinSalary = null;
+        double minSalary = Integer.MAX_VALUE;
+        for (Employee employee : EMPLOYEES) {
+            if (employee != null && minSalary > employee.getSalary()) {
+                minSalary = employee.getSalary();
+                employeeWithMinSalary = employee;
+            }
+        }
+        return employeeWithMinSalary;
+    }
+
+    /**
+     * Метод находит сотрудника с минимальным окладом из выбранного отдела.
+     *
+     * @param department - (int) целое число от 1 до 5.
+     * @return - (Employee) возвращает объект сотрудника с минимальным окладом из выбранного отдела. Вернет null, если отдел пуст.
+     */
+    private static Employee findEmployeeWithMinSalaryByDepartment(int department) {
+        Employee employeeWithMinSalary = null;
+        double minSalary = Integer.MAX_VALUE;
+        for (Employee employee : EMPLOYEES) {
+            if (employee != null && minSalary > employee.getSalary() && department == employee.getDepartment()) {
+                minSalary = employee.getSalary();
+                employeeWithMinSalary = employee;
+            }
+        }
+        return employeeWithMinSalary;
+    }
+
+    /**
+     * Метод увеличивает оклад всех сотрудников на заданный процент.
+     *
+     * @param bonus - (int) процент, на который будут повышены оклады всех сотрудников.
      */
     private static void raiseAllSalaryByPercent(int bonus) {
         double index = (double) 1 + ((double) bonus / 100);
         System.out.println(index);
-        System.out.println("Увеличение оклада на " + bonus + " процентов.");
         for (Employee employee : EMPLOYEES) {
             if (employee != null) {
                 System.out.println("ID: " + employee.getId() + " | Old salary: " + employee.getSalary());
                 employee.setSalary((int) (employee.getSalary() * index));
                 System.out.println("ID: " + employee.getId() + " | New salary: " + employee.getSalary());
-                System.out.println("-----------------------------------");
             }
         }
     }
 
     /**
-     * Метод принимает целое число, в качестве процента, на который будет увеличен оклад всех сотрудников, а так же номер отдела.
+     * Метод увеличивает оклад всех сотрудников, из выбранного отдела, на заданный процент.
      *
-     * @param bonus      - целое число типа int, отражающее процент, на который будут повышены оклады всех сотрудников.
-     * @param department - целое число типа int, отражающее номер отдела, сотрудникам которого будет увеличен оклад.
+     * @param bonus      - (int) процент, на который будут повышены оклады всех сотрудников.
+     * @param department - (int) целое число от 1 до 5.
      */
     private static void raiseAllSalaryByPercentByDepartment(int bonus, int department) {
         double index = (double) 1 + ((double) bonus / 100);
@@ -309,22 +319,71 @@ public class Main {
         }
     }
 
-    private static Employee showEmployeesWithSalaryLowerThan (int number){
-        for (Employee employee : EMPLOYEES){
-            if (number > employee.getSalary()){
+    /**
+     * Метод находит сотрудников с окладом ниже заданного числа.
+     *
+     * @param number - (int) целое число, с которым будут сравниваться оклады всех сотрудников.
+     */
+    private static void findEmployeesWithSalaryLowerThan(int number) {
+        for (Employee employee : EMPLOYEES) {
+            if (employee != null && number > employee.getSalary()) {
                 System.out.println(employee);
             }
         }
-        return null;
-    }
-    private static Employee showEmployeesWithSalaryHigherThan (int number){
-        for (Employee employee : EMPLOYEES){
-            if (number <= employee.getSalary()){
-                System.out.println(employee);
-            }
-        }
-        return null;
     }
 
+    /**
+     * Метод находит сотрудников с окладом выше заданного числа.
+     *
+     * @param number - (int) целое число, с которым будут сравниваться оклады всех сотрудников.
+     */
+    private static void findEmployeesWithSalaryHigherThan(int number) {
+        for (Employee employee : EMPLOYEES) {
+            if (employee != null && number <= employee.getSalary()) {
+                System.out.println(employee);
+            }
+        }
+    }
+
+    /**
+     * Метод находит сотрудников, из выбранного отдела, с окладом ниже заданного числа.
+     * @param number - (int) целое число, с которым будут сравниваться оклады всех сотрудников.
+     * @param department - (int) целое число от 1 до 5.
+     */
+    private static void findEmployeesWithSalaryLowerThanByDepartment(int number, int department) {
+        for (Employee employee : EMPLOYEES) {
+            if (employee != null && department == employee.getDepartment() && number > employee.getSalary()) {
+                System.out.println(employee);
+            }
+        }
+    }
+
+    /**
+     * Метод находит сотрудников, из выбранного отдела, с окладом выше заданного числа.
+     * @param number - (int) целое число, с которым будут сравниваться оклады всех сотрудников.
+     * @param department - (int) целое число от 1 до 5.
+     */
+    private static void findEmployeesWithSalaryHigherThanByDepartment(int number, int department) {
+        for (Employee employee : EMPLOYEES) {
+            if (employee != null && department == employee.getDepartment() && number < employee.getSalary()) {
+                System.out.println(employee);
+            }
+        }
+    }
+
+
+    private static void addEmployee(Employee newEmployee) {
+        boolean added = false;
+        for (int i = 0; i < EMPLOYEES.length; i++) {
+            if (EMPLOYEES[i] == null) {
+                EMPLOYEES[i] = newEmployee;
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            System.out.println("Сотрудник не добавлен! Возможно, массив полон.");
+        }
+    }
 
 }
